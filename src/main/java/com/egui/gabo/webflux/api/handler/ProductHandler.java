@@ -24,6 +24,17 @@ import org.springframework.validation.Validator;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Handler class for Functional WebFlux Endpoints.
+ * <p>
+ * This class contains the logic to handle HTTP requests routed via
+ * {@link com.egui.gabo.webflux.api.RouterFunctionConfig}.
+ * It operates on {@link ServerRequest} and returns a {@link Mono} of
+ * {@link ServerResponse}.
+ * </p>
+ * 
+ * @author Gabriel Eguiguren P.
+ */
 @Component
 public class ProductHandler {
 
@@ -37,10 +48,22 @@ public class ProductHandler {
 	@Autowired
 	private Validator validator;
 
+	/**
+	 * Lists all products.
+	 * 
+	 * @param request the incoming server request
+	 * @return a ServerResponse containing all products
+	 */
 	public Mono<ServerResponse> listProduct(ServerRequest request) {
 		return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(service.findAll(), Product.class);
 	}
 
+	/**
+	 * Gets a single product by ID.
+	 * 
+	 * @param request the incoming server request containing path variable 'id'
+	 * @return a ServerResponse containing the product or 404 Not Found
+	 */
 	public Mono<ServerResponse> seeProduct(ServerRequest request) {
 		String id = request.pathVariable("id");
 
@@ -48,6 +71,17 @@ public class ProductHandler {
 				.switchIfEmpty(ServerResponse.notFound().build());
 	}
 
+	/**
+	 * Creates a new product.
+	 * <p>
+	 * This method performs validation on the product object.
+	 * If invalid, it returns a 400 Bad Request with error details.
+	 * If valid, it saves the product and returns 201 Created.
+	 * </p>
+	 * 
+	 * @param request the incoming server request containing the product JSON
+	 * @return a ServerResponse indicative of the outcome
+	 */
 	public Mono<ServerResponse> createProduct(ServerRequest request) {
 
 		Mono<Product> product = request.bodyToMono(Product.class);
@@ -73,6 +107,13 @@ public class ProductHandler {
 		});
 	}
 
+	/**
+	 * Updates an existing product.
+	 * 
+	 * @param request the incoming server request containing path variable 'id' and
+	 *                product JSON
+	 * @return a ServerResponse with the updated product
+	 */
 	public Mono<ServerResponse> updateProduct(ServerRequest request) {
 
 		Mono<Product> product = request.bodyToMono(Product.class);
@@ -89,6 +130,12 @@ public class ProductHandler {
 				.body(service.save(p), Product.class).switchIfEmpty(ServerResponse.notFound().build()));
 	}
 
+	/**
+	 * Creates a new product including an initial image upload.
+	 * 
+	 * @param request the incoming server request (multipart)
+	 * @return a ServerResponse with the created product
+	 */
 	public Mono<ServerResponse> createProductWithImage(ServerRequest request) {
 
 		// get the product values from form-request
@@ -115,6 +162,12 @@ public class ProductHandler {
 				.flatMap(p -> ServerResponse.created(URI.create("/api/v2/products/".concat(p.getId()))).bodyValue(p));
 	}
 
+	/**
+	 * Uploads an image to an existing product.
+	 * 
+	 * @param request the incoming server request containing 'id' and file
+	 * @return a ServerResponse with the updated product
+	 */
 	public Mono<ServerResponse> uploadImage(ServerRequest request) {
 
 		String id = request.pathVariable("id");
@@ -129,6 +182,12 @@ public class ProductHandler {
 
 	}
 
+	/**
+	 * Deletes a product.
+	 * 
+	 * @param request the incoming server request containing 'id'
+	 * @return a ServerResponse with no content
+	 */
 	public Mono<ServerResponse> deleteProduct(ServerRequest request) {
 
 		String id = request.pathVariable("id");

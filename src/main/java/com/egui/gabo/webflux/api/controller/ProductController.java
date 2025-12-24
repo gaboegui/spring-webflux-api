@@ -32,6 +32,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
+ * REST Controller for managing Product resources.
+ * <p>
+ * This class uses the annotation-based programming model (similar to Spring
+ * MVC).
+ * It communicates with the {@link ProductService} to perform CRUD operations.
+ * </p>
  * 
  * @author Gabriel Eguiguren P.
  *
@@ -47,6 +53,15 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 
+	/**
+	 * Retrieve all products.
+	 * <p>
+	 * Returns a {@link Flux} which represents a stream of 0 to N elements.
+	 * The response body will contain the list of products in JSON format.
+	 * </p>
+	 * 
+	 * @return Mono of ResponseEntity containing the Flux of products
+	 */
 	@GetMapping
 	public Mono<ResponseEntity<Flux<Product>>> listProducts() {
 
@@ -54,6 +69,17 @@ public class ProductController {
 		return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(productService.findAll()));
 	}
 
+	/**
+	 * Retrieve a single product by ID.
+	 * <p>
+	 * Returns a {@link Mono} which represents 0 or 1 element.
+	 * If the product is found, it returns 200 OK.
+	 * If not found, it returns 404 Not Found (using defaultIfEmpty).
+	 * </p>
+	 * 
+	 * @param id the product ID
+	 * @return Mono of ResponseEntity containing the product or not found status
+	 */
 	@GetMapping("/{id}")
 	public Mono<ResponseEntity<Product>> getProduct(@PathVariable String id) {
 
@@ -61,6 +87,13 @@ public class ProductController {
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 
+	/**
+	 * Upload a picture for an existing product.
+	 * 
+	 * @param id   the product ID
+	 * @param file the file part from the multipart request
+	 * @return Mono of ResponseEntity containing the updated product
+	 */
 	@PostMapping("/upload/{id}")
 	public Mono<ResponseEntity<Product>> uploadProductPicture(@PathVariable String id, @RequestPart FilePart file) {
 		return productService.findById(id).flatMap(p -> {
@@ -72,12 +105,13 @@ public class ProductController {
 	}
 
 	/**
+	 * Create a product with an image (Form Data).
 	 * 
 	 * @param product is provided as form-data type
-	 * @param file
-	 * @return
+	 * @param file    the image file
+	 * @return Mono of ResponseEntity containing the created product
 	 */
-	@PostMapping("/v2")
+	@PostMapping("/v1")
 	public Mono<ResponseEntity<Product>> saveProductWithPic(Product product, @RequestPart FilePart file) {
 
 		if (product.getCreateAt() == null) {
@@ -93,9 +127,15 @@ public class ProductController {
 	}
 
 	/**
+	 * Create a new product (JSON body).
+	 * <p>
+	 * Validates the request body. If successful, creates the product.
+	 * If validation fails, returns a list of error messages with 400 Bad Request.
+	 * </p>
 	 * 
-	 * @param product is provided as JSON Request Body
-	 * @return
+	 * @param monoProduct is provided as JSON Request Body wrapped in Mono
+	 * @return Mono of ResponseEntity containing the created product or error
+	 *         details
 	 */
 	@PostMapping
 	public Mono<ResponseEntity<Map<String, Object>>> saveProduct(@Valid @RequestBody Mono<Product> monoProduct) {
@@ -132,6 +172,13 @@ public class ProductController {
 
 	}
 
+	/**
+	 * Update an existing product.
+	 * 
+	 * @param product the product data from request body
+	 * @param id      the product ID from path variable
+	 * @return Mono of ResponseEntity containing the updated product
+	 */
 	@PutMapping("/{id}")
 	public Mono<ResponseEntity<Product>> editProduct(@RequestBody Product product, @PathVariable String id) {
 
@@ -146,6 +193,12 @@ public class ProductController {
 
 	}
 
+	/**
+	 * Delete a product by ID.
+	 * 
+	 * @param id the product ID
+	 * @return Mono of ResponseEntity with no content
+	 */
 	@DeleteMapping("/{id}")
 	public Mono<ResponseEntity<Object>> deleteProduct(@PathVariable String id) {
 

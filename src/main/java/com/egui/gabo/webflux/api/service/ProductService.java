@@ -6,6 +6,12 @@ import com.egui.gabo.webflux.api.models.document.Product;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Service Interface for managing Products and Categories.
+ * Defines operations to be implemented by the service layer.
+ * 
+ * @author Gabriel Eguiguren P.
+ */
 public interface ProductService {
 
 	/**

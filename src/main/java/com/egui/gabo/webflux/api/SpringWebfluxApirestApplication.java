@@ -18,8 +18,18 @@ import com.egui.gabo.webflux.api.models.repository.ProductRepository;
 import reactor.core.publisher.Flux;
 
 @SpringBootApplication
+/**
+ * Main entry point for the Spring Boot WebFlux API application.
+ * <p>
+ * This class creates the Spring application context and also implements
+ * {@link CommandLineRunner}
+ * to perform initial data setup when the application starts.
+ * </p>
+ * 
+ * @author Gabriel Eguiguren P.
+ */
 public class SpringWebfluxApirestApplication implements CommandLineRunner {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(SpringWebfluxApirestApplication.class);
 
 	@Autowired
@@ -35,34 +45,49 @@ public class SpringWebfluxApirestApplication implements CommandLineRunner {
 		SpringApplication.run(SpringWebfluxApirestApplication.class, args);
 	}
 
+	/**
+	 * Callback used to run the bean.
+	 * <p>
+	 * This method is executed after the application context is loaded and before
+	 * the Spring Application run method completes.
+	 * It allows us to reset the database state and populate it with sample data for
+	 * development purposes.
+	 * </p>
+	 * 
+	 * @param args incoming main method arguments
+	 * @throws Exception on error
+	 */
 	@Override
 	public void run(String... args) throws Exception {
-		// Clear existing test data
-				mongoTemplate.dropCollection("products").subscribe();
-				mongoTemplate.dropCollection("categories").subscribe();
+		// Clear existing test data from MongoDB collections to start fresh
+		mongoTemplate.dropCollection("products").subscribe();
+		mongoTemplate.dropCollection("categories").subscribe();
 
-				// Insert test products for development environment
-				Category cat1 = new Category("Electronic");
-				Category cat2 = new Category("Computers");
+		// Insert test products for development environment
+		Category cat1 = new Category("Electronic");
+		Category cat2 = new Category("Computers");
 
-				Flux.just(cat1, cat2)
-						.flatMap(categorieRepository::save)
-						.thenMany( 							// execute a new Flux inmmediatly after
-								Flux.just(new Product("TV LG 4k 52in", 500.99, cat1),
-										new Product("Camara Sony", 500.99, cat1),
-										new Product("Apple watch", 200.99, cat1),
-										new Product("Laptop Lenovo", 700.99, cat2),
-										new Product("Webcam Logitech", 199.99, cat1),
-										new Product("Camara Sony", 500.99, cat1),
-										new Product("TV Haisen 4k 52", 600.99, cat1),
-										new Product("Laptop Mac Book Pro", 1600.99, cat2))
-										.flatMap(product -> {
-											product.setCreateAt(new Date());
-											return repository.save(product);
-										}))
-						.subscribe(product -> log.info("Inserted: {}",
-								product.getName() + " categorie: " + product.getCategory().getName()));
-		
+		// Using Flux to handle the reactive stream of data insertion
+		Flux.just(cat1, cat2)
+				.flatMap(categorieRepository::save) // Save categories asynchronously
+				.thenMany( // execute a new Flux inmmediatly after categories are saved
+						Flux.just(new Product("TV LG 4k 52in", 500.99, cat1),
+								new Product("Camara Sony", 500.99, cat1),
+								new Product("Apple watch", 200.99, cat1),
+								new Product("Laptop Lenovo", 700.99, cat2),
+								new Product("Webcam Logitech", 199.99, cat1),
+								new Product("Camara Sony", 500.99, cat1),
+								new Product("TV Haisen 4k 52", 600.99, cat1),
+								new Product("Laptop Mac Book Pro", 1600.99, cat2))
+								.flatMap(product -> {
+									product.setCreateAt(new Date());
+									return repository.save(product); // Save each product
+								}))
+				.subscribe(product -> log.info("Inserted: {}",
+						product.getName() + " categorie: " + product.getCategory().getName())); // Subscribe to trigger
+																								// the flow and log
+																								// results
+
 	}
 
 }

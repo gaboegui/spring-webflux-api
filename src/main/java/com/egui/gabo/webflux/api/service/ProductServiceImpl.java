@@ -13,6 +13,14 @@ import reactor.core.publisher.Mono;
 
 /**
  * Implementation of ProductService using ReactiveMongoRepository.
+ * <p>
+ * This class interacts with the MongoDB repositories to perform database
+ * operations.
+ * It is annotated with @Service to be discovered by Spring's component
+ * scanning.
+ * </p>
+ * 
+ * @author Gabriel Eguiguren P.
  */
 @Service
 public class ProductServiceImpl implements ProductService {
