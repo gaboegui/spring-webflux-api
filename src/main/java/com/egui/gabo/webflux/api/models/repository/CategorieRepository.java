@@ -4,6 +4,8 @@ import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 import com.egui.gabo.webflux.api.models.document.Category;
 
+import reactor.core.publisher.Mono;
+
 /**
  * Reactive MongoDB repository for Categories entities.
  * <p>
@@ -14,5 +16,7 @@ import com.egui.gabo.webflux.api.models.document.Category;
  * @author Gabriel Eguiguren P.
  */
 public interface CategorieRepository extends ReactiveMongoRepository<Category, String> {
+	
+	Mono<Category> findByName(String name);
 
 }

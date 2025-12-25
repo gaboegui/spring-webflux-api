@@ -35,6 +35,15 @@ public interface ProductService {
 	 * @return a Mono containing the product if found, or empty
 	 */
 	public Mono<Product> findById(String id);
+	
+	/**
+	 * Find a product by its name.
+	 * 
+	 * @param name the product Name
+	 * @return a Mono containing the product if found, or empty
+	 */
+	public Mono<Product> findByName(String name);
+	
 
 	/**
 	 * Save a product.
@@ -67,6 +76,15 @@ public interface ProductService {
 	 * @return a Mono containing the category if found
 	 */
 	public Mono<Category> findCategoryById(String id);
+	
+	/**
+	 * Find a category by its name.
+	 * 
+	 * @param name the category name to search
+	 * @return a Mono containing the category if found
+	 */
+	public Mono<Category> findCategoryByName(String name);
+	
 
 	/**
 	 * Save a category.

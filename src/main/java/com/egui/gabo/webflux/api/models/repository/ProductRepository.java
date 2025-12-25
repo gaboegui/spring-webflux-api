@@ -1,8 +1,11 @@
 package com.egui.gabo.webflux.api.models.repository;
 
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
 import com.egui.gabo.webflux.api.models.document.Product;
+
+import reactor.core.publisher.Mono;
 
 /**
  * Reactive MongoDB repository for Product entities.
@@ -27,5 +30,11 @@ import com.egui.gabo.webflux.api.models.document.Product;
  * @author Gabriel Eguiguren P.
  */
 public interface ProductRepository extends ReactiveMongoRepository<Product, String> {
+
+	Mono<Product> findByName(String name);
+	
+	// alternative using native mongo query
+	@Query("{'name':?0}") 		
+	Mono<Product> lookByName(String name);
 
 }

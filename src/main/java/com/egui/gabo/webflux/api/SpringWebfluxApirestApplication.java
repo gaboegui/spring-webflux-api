@@ -76,7 +76,7 @@ public class SpringWebfluxApirestApplication implements CommandLineRunner {
 								new Product("Apple watch", 200.99, cat1),
 								new Product("Laptop Lenovo", 700.99, cat2),
 								new Product("Webcam Logitech", 199.99, cat1),
-								new Product("Camara Sony", 500.99, cat1),
+								new Product("Camara Nikon", 500.99, cat1),
 								new Product("TV Haisen 4k 52", 600.99, cat1),
 								new Product("Laptop Mac Book Pro", 1600.99, cat2))
 								.flatMap(product -> {
