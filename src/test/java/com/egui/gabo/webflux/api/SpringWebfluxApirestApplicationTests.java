@@ -109,5 +109,22 @@ class SpringWebfluxApirestApplicationTests {
 			});
 			
 	}
+	
+	@Test
+	void deleteTest() {
+		
+		Product productDb = service.findByName("Apple watch").block();
+
+		client.delete()
+			.uri("/api/v2/products/{id}", Collections.singletonMap("id", productDb.getId()))
+			.exchange()
+			.expectStatus().isNoContent()  //204
+			.expectBody().isEmpty(); 
+		
+		client.get()
+			.uri("/api/v2/products/{id}", Collections.singletonMap("id", productDb.getId()))
+			.exchange()
+			.expectStatus().isNotFound();
+	}
 
 }
