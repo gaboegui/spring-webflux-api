@@ -1,24 +1,33 @@
 package com.egui.gabo.webflux.api;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.egui.gabo.webflux.api.models.document.Category;
 import com.egui.gabo.webflux.api.models.document.Product;
 import com.egui.gabo.webflux.api.service.ProductService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import reactor.core.publisher.Mono;
 
-
+/**
+ * Unit tests for @ProductController
+ *  
+ * @author Gabriel Eguiguren P.
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT )
-class SpringWebfluxApirestApplicationTests {
+class ProductControllerUnitTests {
+	
+	private String URL_ENDPOINT  = "/api/products";
 	
 	@Autowired
 	private WebTestClient client;
@@ -29,7 +38,7 @@ class SpringWebfluxApirestApplicationTests {
 	@Test
 	void listTest() {
 		client.get()
-			.uri("/api/v2/products")
+			.uri(URL_ENDPOINT)
 			.accept(MediaType.APPLICATION_JSON)
 			.exchange()						
 			.expectStatus().isOk()			// start assertions
@@ -50,7 +59,7 @@ class SpringWebfluxApirestApplicationTests {
 		
 		
 		client.get()
-			.uri("/api/v2/products/{id}", Collections.singletonMap("id", product.getId()))
+			.uri(URL_ENDPOINT.concat("/{id}"), Collections.singletonMap("id", product.getId()))
 			.accept(MediaType.APPLICATION_JSON)
 			.exchange()
 			.expectStatus().isOk()			// start assertions
@@ -69,19 +78,45 @@ class SpringWebfluxApirestApplicationTests {
 		Product newProduct = new Product("Laptop Acer", 500.00, catDb);
 		
 		client.post()
-		.uri("/api/v2/products")
+		.uri(URL_ENDPOINT)
 		.contentType(MediaType.APPLICATION_JSON)   		// request
 		.accept(MediaType.APPLICATION_JSON)				// response	
 		.body(Mono.just(newProduct), Product.class)
 		.exchange()										// call the WS
 		.expectStatus().isCreated()
 		.expectHeader().contentType(MediaType.APPLICATION_JSON)
-		.expectBody(Product.class)
+		.expectBody()  							// returns a JSON map 
+		.jsonPath("$.product.id").isNotEmpty()
+		.jsonPath("$.product.name").isEqualTo("Laptop Acer")
+		.jsonPath("$.product.price").isEqualTo(500.00);
+		
+	}
+	
+	
+	@Test
+	void createTestBodyHashMap() {
+		
+		Category catDb = service.findCategoryByName("Computers").block();
+		
+		Product newProduct = new Product("Laptop Acer", 500.00, catDb);
+		
+		client.post()
+		.uri(URL_ENDPOINT)
+		.contentType(MediaType.APPLICATION_JSON)   		// request
+		.accept(MediaType.APPLICATION_JSON)				// response	
+		.body(Mono.just(newProduct), Product.class)
+		.exchange()										// call the WS
+		.expectStatus().isCreated()
+		.expectHeader().contentType(MediaType.APPLICATION_JSON)
+		.expectBody(new ParameterizedTypeReference<LinkedHashMap<String, Object>>() {}) // returns a JSON map 
 		.consumeWith(response -> {
-			Product product = response.getResponseBody();
+			Object o = response.getResponseBody().get("product");
+			Product product = new ObjectMapper().convertValue(o, Product.class);
 			Assertions.assertTrue(!product.getId().isEmpty());
 			Assertions.assertTrue(product.getName().equals("Laptop Acer"));
-		});
+			Assertions.assertTrue(product.getPrice().equals(500.00));
+		});  							
+		
 	}
 	
 	@Test
@@ -94,7 +129,7 @@ class SpringWebfluxApirestApplicationTests {
 		
 		
 		client.put()
-			.uri("/api/v2/products/{id}", Collections.singletonMap("id", productDb.getId()))
+			.uri(URL_ENDPOINT.concat("/{id}"), Collections.singletonMap("id", productDb.getId()))
 			.accept(MediaType.APPLICATION_JSON)
 			.body(Mono.just(editedProduct), Product.class)
 			.exchange()
@@ -116,13 +151,13 @@ class SpringWebfluxApirestApplicationTests {
 		Product productDb = service.findByName("Apple watch").block();
 
 		client.delete()
-			.uri("/api/v2/products/{id}", Collections.singletonMap("id", productDb.getId()))
+			.uri(URL_ENDPOINT.concat("/{id}"), Collections.singletonMap("id", productDb.getId()))
 			.exchange()
 			.expectStatus().isNoContent()  //204
 			.expectBody().isEmpty(); 
 		
 		client.get()
-			.uri("/api/v2/products/{id}", Collections.singletonMap("id", productDb.getId()))
+			.uri(URL_ENDPOINT.concat("/{id}"), Collections.singletonMap("id", productDb.getId()))
 			.exchange()
 			.expectStatus().isNotFound();
 	}
