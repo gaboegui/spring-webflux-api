@@ -1,0 +1,508 @@
+{
+	"info": {
+		"_postman_id": "4ac1967f-2a5b-43ac-8bae-21073382c7fe",
+		"name": "API Products",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Annotation-Based v1",
+			"item": [
+				{
+					"name": "List products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"// Check if the response is an array and has at least one item\r",
+									"if (Array.isArray(response) && response.length > 0) {\r",
+									"    // Select the first product in the list\r",
+									"    const firstProduct = response[0];\r",
+									"    \r",
+									"    // Save the ID to a collection variable named 'productId'\r",
+									"    pm.collectionVariables.set(\"productId\", firstProduct.id);\r",
+									"    pm.collectionVariables.set(\"categoryId\", firstProduct.category.id);\r",
+									"    pm.collectionVariables.set(\"categoryName\", firstProduct.category.name);\r",
+									"    \r",
+									"    console.log(\"Saved Product ID:\", firstProduct.id);\r",
+									"} else {\r",
+									"    console.warn(\"No products found in the response!\");\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/products",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List products by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/api/products/{{productId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save Product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n        \"name\": \"Camara Sony 4k\",\r\n        \"price\": 1500.99,\r\n        \"category\": {\r\n            \"id\": \"{{categoryId}}\",\r\n            \"name\": \"{{categoryName}}\"\r\n        }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/products",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n        \"name\": \"Camara Full Frame Sony\",\r\n        \"price\": 1500,\r\n        \"createAt\": \"2025-12-23T20:46:17.296+00:00\",\r\n        \"category\": {\r\n            \"id\": \"{{categoryId}}\",\r\n            \"name\": \"{{categoryName}}\"\r\n        }\r\n }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/products/{{productId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Product Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/E:/Pictures/Gabo Logo mas SIN EDITAR.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/api/products/upload/{{productId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products",
+								"upload",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/products/{{productId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save Product with Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/E:/Pictures/visitaeloro_logo.png"
+								},
+								{
+									"key": "name",
+									"value": "TV Motorolla 55",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "600",
+									"type": "text"
+								},
+								{
+									"key": "category.id",
+									"value": "{{categoryId}}",
+									"type": "text"
+								},
+								{
+									"key": "category.name",
+									"value": "{{categoryName}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/api/products/v1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"products",
+								"v1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Functional Endpoints v2",
+			"item": [
+				{
+					"name": "List Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the JSON response\r",
+									"const response = pm.response.json();\r",
+									"\r",
+									"// Check if the response is an array and has at least one item\r",
+									"if (Array.isArray(response) && response.length > 0) {\r",
+									"    // Select the first product in the list\r",
+									"    const firstProduct = response[0];\r",
+									"    \r",
+									"    // Save the ID to a collection variable named 'productId'\r",
+									"    pm.collectionVariables.set(\"productId\", firstProduct.id);\r",
+									"    pm.collectionVariables.set(\"categoryId\", firstProduct.category.id);\r",
+									"    pm.collectionVariables.set(\"categoryName\", firstProduct.category.name);\r",
+									"    \r",
+									"    console.log(\"Saved Product ID:\", firstProduct.id);\r",
+									"} else {\r",
+									"    console.warn(\"No products found in the response!\");\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v2/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v2",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Products by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/v2/products/{{productId}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v2",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save Product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n        \"name\": \"Camara Sony 4k\",\r\n        \"price\": 1500.99,\r\n        \"category\": {\r\n            \"id\": \"{{categoryId}}\",\r\n            \"name\": \"{{categoryName}}\"\r\n        }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v2/products",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v2",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Tv antigua\",\r\n    \"price\": 2000,\r\n    \"category\": {\r\n        \"id\": \"{{categoryId}}\",\r\n        \"name\": \"{{categoryName}}\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v2/products/{{productId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v2",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/api/v2/products/{{productId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v2",
+								"products",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Product Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/E:/Pictures/Gabo Logo mas SIN EDITAR.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/api/v2/products/upload/{{productId}}",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v2",
+								"products",
+								"upload",
+								"{{productId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save Product with Image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/E:/Pictures/Gabo Logo mas SIN EDITAR.png"
+								},
+								{
+									"key": "name",
+									"value": "TV Motorolla 55",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "600",
+									"type": "text"
+								},
+								{
+									"key": "category.id",
+									"value": "{{categoryId}}",
+									"type": "text"
+								},
+								{
+									"key": "category.name",
+									"value": "{{categoryName}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/api/v2/products/createWithPic",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"v2",
+								"products",
+								"createWithPic"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "productId",
+			"value": ""
+		},
+		{
+			"key": "categoryId",
+			"value": ""
+		},
+		{
+			"key": "categoryName",
+			"value": ""
+		}
+	]
+}

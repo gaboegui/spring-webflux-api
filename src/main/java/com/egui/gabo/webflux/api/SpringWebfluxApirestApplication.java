@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 
 import com.egui.gabo.webflux.api.models.document.Category;
@@ -17,7 +18,7 @@ import com.egui.gabo.webflux.api.models.repository.ProductRepository;
 
 import reactor.core.publisher.Flux;
 
-@SpringBootApplication
+
 /**
  * Main entry point for the Spring Boot WebFlux API application.
  * <p>
@@ -28,6 +29,8 @@ import reactor.core.publisher.Flux;
  * 
  * @author Gabriel Eguiguren P.
  */
+@EnableDiscoveryClient
+@SpringBootApplication
 public class SpringWebfluxApirestApplication implements CommandLineRunner {
 
 	private static final Logger log = LoggerFactory.getLogger(SpringWebfluxApirestApplication.class);
